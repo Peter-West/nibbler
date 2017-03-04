@@ -19,10 +19,8 @@ typedef struct	s_food
 class AGraph {
 public:
 	virtual int		get_key() = 0;
-	virtual	void	update(std::vector<t_snake>*, std::vector<t_food>*) = 0;
+	virtual	void	update(std::vector<t_snake>*, std::vector<t_food>*, int speed, bool update) = 0;
 	virtual	void	start() = 0;
-	// virtual void	*create_object(int, int) = 0;
-	// virtual void	destroy_object() = 0;
 };
 
 #endif

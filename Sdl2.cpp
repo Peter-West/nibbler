@@ -48,26 +48,29 @@ std::tuple<int, int> Sdl2::get_screen_coords(double x, double y) {
 	return (std::make_tuple(x_scr, y_scr));
 }
 
-void	Sdl2::bodyAnimation(SDL_Rect rect, SDL_Rect old_rect, bool head) {
-	
-	// while (rect.x != old_rect.x && rect.y != old_rect.y) {
-		(void)old_rect;
+void	Sdl2::bodyAnimation(bool head, SDL_Rect rect) {
+	// for (auto i : this->_dest_rect) {
+
 		if (head)
 			SDL_SetRenderDrawColor(this->renderer, 125, 100, 0, 255);
 		else
 			SDL_SetRenderDrawColor(this->renderer, 255, 0, 0, 255);
-		// ((rect.x != old_rect.x) && (rect.x - old_rect.x) > 0) ? rect.x-- : rect.x++;
-		// ((rect.y != old_rect.y) && (rect.y - old_rect.y) > 0) ? rect.y-- : rect.y++;
 		SDL_RenderFillRect(this->renderer, &rect);
-		// SDL_RenderSetClipRect(this->renderer, &rect);
 	// }
 }
+/*
+void	Sdl2::delta() {
+	int delta_tx, delta_ty;
+
+	delta_tx = this->_speed / this->_dest_rect[0].x - this->_old_rect[0].x;
+	delta_ty = this->_speed / this->_dest_rect[0].y - this->_old_rect[0].y;
+	printf("delta_ty : %d, delta_tx : %d\n", delta_tx, delta_ty);
+}*/
 
 void	Sdl2::drawBody(std::vector<t_snake> *snake, std::vector<t_food> *food) {
 
 	SDL_Rect						rect;
 	static bool						initialized = false;
-	static SDL_Rect					old_rect;
 	std::tuple<int, int>		 	coords;
 
 	for (auto i : *food) {
@@ -80,17 +83,20 @@ void	Sdl2::drawBody(std::vector<t_snake> *snake, std::vector<t_food> *food) {
 		SDL_RenderFillRect(this->renderer, &rect);
 	}
 
-	for (auto i : *snake) {
-		coords = get_screen_coords((double)i.x , (double)i.y);
-		rect.x = std::get<0>(coords) + (int)(this->_horizontal_spacing / 4 + 0.5);
-		rect.y = std::get<1>(coords) + (int)(this->_vertical_spacing / 4 + 0.5);
-		rect.w = (int)this->_horizontal_spacing / 2;
-		rect.h = (int)this->_vertical_spacing / 2;
-		if (initialized)
-			this->bodyAnimation(rect, old_rect, i.head);
-		old_rect = rect;
-		initialized = true;
-	}
+	// if (this->_update == true) {
+		for (auto i : *snake) {
+			coords = get_screen_coords((double)i.x , (double)i.y);
+			rect.x = std::get<0>(coords) + (int)(this->_horizontal_spacing / 4 + 0.5);
+			rect.y = std::get<1>(coords) + (int)(this->_vertical_spacing / 4 + 0.5);
+			rect.w = (int)this->_horizontal_spacing / 2;
+			rect.h = (int)this->_vertical_spacing / 2;
+			// this->_dest_rect.push_back(rect);
+			// if (initialized)
+				this->bodyAnimation(i.head, rect);
+		}
+	// }
+	initialized = true;
+	// this->_old_rect = this->_dest_rect;
 }
 
 void	Sdl2::drawGrid() {
@@ -116,6 +122,8 @@ int		Sdl2::get_key() {
 	// 	return (DOWN);
 	// if (this->event.type == SDL_KEYDOWN && this->event.key.keysym.sym == SDLK_UP)
 	// 	return (UP);
+	if (this->event.type == SDL_KEYDOWN && this->event.key.keysym.sym == SDLK_2)
+		return (LIBNCURSES);
 	if (this->event.type == SDL_KEYDOWN && this->event.key.keysym.sym == SDLK_LEFT)
 		return (LEFT);
 	if (this->event.type == SDL_KEYDOWN && this->event.key.keysym.sym == SDLK_RIGHT)
@@ -156,7 +164,9 @@ void	Sdl2::move_snake(char key) {
 	if ()
 }*/
 
-void		Sdl2::update(std::vector<t_snake> *snake, std::vector<t_food> *food) {
+void		Sdl2::update(std::vector<t_snake> *snake, std::vector<t_food> *food, int speed, bool update) {
+	this->_speed = speed;
+	this->_update = update;
 	SDL_RenderClear(this->renderer);
 	this->drawGrid();
 	this->drawBody(snake, food);
