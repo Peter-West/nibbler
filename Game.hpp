@@ -11,7 +11,7 @@
 # define DIR_LEFT		'l'
 # define LIBSDL2		1
 # define LIBNCURSES		2
-# define LIB3			3
+# define LIBX11			3
 # define EXIT			-1
 # include <iostream>
 # include <cstdlib>
@@ -25,7 +25,7 @@ class Game
 {
 public:
 	Game();
-	Game(int, int);
+	Game(int, int, int, char**);
 	~Game();
 	Game(Game const &src);
 	Game &operator=(Game const &rhs);
@@ -48,11 +48,13 @@ private:
 	char					_direction;
 	bool					_lost;
 	bool					_eating;
-	int						_speed;
+	double					_speed;
 	int						_lib;
 	bool					_started;
 	void					*_handle;
 	AGraph					*_Graphlib;
+	int						_argc;
+	char					**_argv;
 };
 
 #endif

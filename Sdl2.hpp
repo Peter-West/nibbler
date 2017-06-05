@@ -1,8 +1,5 @@
 #ifndef SDL2_HPP
 # define SDL2_HPP
-# define SCREEN_WIDTH	800.0
-# define SCREEN_HEIGHT	800.0
-# include <dlfcn.h>
 # include <tuple>
 # include <vector>
 # include <SDL2/SDL.h>
@@ -26,8 +23,8 @@ private:
 	std::tuple<int, int>			get_screen_coords(double x, double y);
 	void							bodyAnimation(bool, SDL_Rect);
 	// void							delta();
-	int								get_key();
-
+	virtual int						get_key();
+	
 	SDL_Renderer					*renderer;
 	SDL_Window						*window;
 	SDL_Event						event;

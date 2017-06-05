@@ -3,8 +3,13 @@
 Game::Game() {
 }
 
-Game::Game(int width, int height) : _width(width), _height(height) {
-	this->_lib = LIBSDL2;
+Game::Game(int width, int height, int argc, char **argv) :
+_width(width), _height(height), _argc(argc), _argv(argv) {
+	this->_lib = LIBNCURSES;
+	// this->_lib = LIBSDL2;
+	(void)this->_argv;
+	(void)this->_argc;
+	// this->_lib = LIBX11;
 	this->init();
 	this->running();
 }
@@ -26,6 +31,7 @@ void	Game::init() {
 	this->_eating = false;
 	this->_lost = false;
 	this->_direction = DIR_LEFT;
+	this->_Graphlib = NULL;
 	std::srand(std::time(0));
 	for (int i = 0 ; i < 3 ; i++) {
 		snake_part.part_number = i;
@@ -161,18 +167,19 @@ void	Game::add_food() {
 }
 
 void	Game::handle_lib() {
-	AGraph* (*start_lib)(int, int);
-	
-	start_lib = (AGraph*(*)(int, int))dlsym(this->_handle, "create_object");
-	this->_Graphlib = (AGraph*)start_lib(this->_width, this->_height);
+	AGraph* (*start_libg)(int, int);
+	start_libg = (AGraph*(*)(int, int))dlsym(this->_handle, "create_object");
+	this->_Graphlib = (AGraph*)start_libg(this->_width, this->_height);
 }
 
 void	Game::start_lib() {
 	if (this->_started == false) {
 		if (this->_lib == LIBSDL2)
 			this->_handle = dlopen("./libSDL2.so", RTLD_LAZY);
-		else if (this->_lib == LIBNCURSES)	
+		else if (this->_lib == LIBNCURSES)
 			this->_handle = dlopen("./libNcurses.so", RTLD_LAZY);
+		else if (this->_lib == LIBX11)
+			this->_handle = dlopen("./libX11.so", RTLD_LAZY);
 		if (!this->_handle) {
 			std::cerr << "dlopen erreur : " << dlerror() << std::endl;
 			exit(EXIT_FAILURE);
@@ -200,30 +207,32 @@ void	Game::running() {
 	this->_speed = 100000 / CYCLE_PER_SEC;
 	while (1) {
 		this->start_lib();
-		if (!this->key)
+		if (!this->key)	{
+			// printf("get_key : %p\n", &this->_Graphlib->get_key());
 			this->key = this->_Graphlib->get_key();
-		if (this->key == LIBSDL2 || this->key == LIBNCURSES)
-		{
+			// printf("this->key : %d\n", this->key);
+		}
+		if (this->key == LIBSDL2 || this->key == LIBNCURSES || this->key == LIBX11) {
 			this->_lib = this->key;
 			this->end_lib();
+			this->key = 0;
 			continue ;
 		}
-		if (this->key == -1)
-		{
+		if (this->key == -1) {
 			this->end_lib();
 			break ;
 		}
 		if (clock() > processed_time) {
-			if (this->key == RIGHT)
+			/*if (this->key == RIGHT)
 				printf("key RIGHT\n");
 			if (this->key == LEFT)
 				printf("key LEFT\n");
 			if (this->key == 0)
-				printf("No key pressed\n");
-			printf("part 0, x : %d, y : %d\n", this->snake[0].x,this->snake[0].y);
-			printf("part 1, x : %d, y : %d\n", this->snake[1].x,this->snake[1].y);
-			printf("part 2, x : %d, y : %d\n", this->snake[2].x,this->snake[2].y);
-			printf("direction : %c\n", this->_direction);
+				printf("No key pressed\n");*/
+			// printf("part 0, x : %d, y : %d\n", this->snake[0].x,this->snake[0].y);
+			// printf("part 1, x : %d, y : %d\n", this->snake[1].x,this->snake[1].y);
+			// printf("part 2, x : %d, y : %d\n", this->snake[2].x,this->snake[2].y);
+			// printf("direction : %c\n", this->_direction);
 			add_food();
 			eat();
 			move_snake();
@@ -234,8 +243,10 @@ void	Game::running() {
 		}
 		this->_Graphlib->update(&this->snake, &this->food, this->_speed, update);
 		update = false;
-		if (this->_lost)
+		if (this->_lost) {
+			this->end_lib();
 			break ;
+		}
 	}
 }
 

@@ -3,11 +3,12 @@
 #include <unistd.h>
 
 Sdl2::Sdl2(int width, int height): _width(width), _height(height) {
+	printf("**SDL2 Start !\n");
 	this->start();
 }
 
 Sdl2::Sdl2() {
-	// this->start();
+
 }
 
 Sdl2::Sdl2(Sdl2 const & src){
@@ -111,19 +112,19 @@ void	Sdl2::drawGrid() {
 	}
 	i = 50.0;
 	while ((int)i <= (SCREEN_HEIGHT - 50)) {
-		SDL_RenderDrawLine(this->renderer, 50 , (int)(i + 0.5), SCREEN_HEIGHT - 50, (int)(i + 0.5));
+		SDL_RenderDrawLine(this->renderer, 50, (int)(i + 0.5), SCREEN_HEIGHT - 50, (int)(i + 0.5));
 		i += this->_vertical_spacing;
 	}
 }
 
 int		Sdl2::get_key() {
 	SDL_PollEvent(&this->event);	
-	// if (this->event.type == SDL_KEYDOWN && this->event.key.keysym.sym == SDLK_DOWN)
-	// 	return (DOWN);
-	// if (this->event.type == SDL_KEYDOWN && this->event.key.keysym.sym == SDLK_UP)
-	// 	return (UP);
+	if (this->event.type == SDL_KEYDOWN && this->event.key.keysym.sym == SDLK_3)
+		return (LIBX11);
 	if (this->event.type == SDL_KEYDOWN && this->event.key.keysym.sym == SDLK_2)
 		return (LIBNCURSES);
+	if (this->event.type == SDL_KEYDOWN && this->event.key.keysym.sym == SDLK_1)
+		return (LIBSDL2);
 	if (this->event.type == SDL_KEYDOWN && this->event.key.keysym.sym == SDLK_LEFT)
 		return (LEFT);
 	if (this->event.type == SDL_KEYDOWN && this->event.key.keysym.sym == SDLK_RIGHT)
@@ -133,36 +134,6 @@ int		Sdl2::get_key() {
 	}
 	return (0);
 }
-
-/*
-void	Sdl2::get_key() {
-	if (this->event.type == SDL_KEYDOWN) {
-		switch(this->event.key.keysym.sym) {
-			case SDLK_UP : {
-				this->drawBody(0, -1);
-				break ;
-			}
-			case SDLK_DOWN : {
-				this->drawBody(0, 1);
-				break ;
-			}
-			case SDLK_RIGHT : {
-				this->drawBody(1, 0);
-				break ;
-			}
-			case SDLK_LEFT : {
-				this->drawBody(-1, 0);
-				break ;
-			}
-			// case SDLK_2 : {return '2'}
-			// case SDLK_3 : {return '3'}
-		}
-	}
-}*/
-/*
-void	Sdl2::move_snake(char key) {
-	if ()
-}*/
 
 void		Sdl2::update(std::vector<t_snake> *snake, std::vector<t_food> *food, int speed, bool update) {
 	this->_speed = speed;

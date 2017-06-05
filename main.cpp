@@ -9,36 +9,11 @@ int		main(int argc, char **argv) {
 	if (argc == 3) {
 		try {
 			Args a(argv);
-			Game g(a.width, a.height);
-/*			if (lib == 1) {
-				if (started == false) {
-					started = true;
-					handle = dlopen("./libSDL2.so", RTLD_LAZY);
-					if (!handle) {
-						std::cerr << "dlopen erreur : " << dlerror() << std::endl;
-						exit(EXIT_FAILURE);
-					}
-					handle_lib(&a, handle);
-					started = false;
-				}
-			}
-			if (lib == 2) {
-				if (started == false)
-				{
-					started = true;
-					handle = dlopen("./libNcurses.so", RTLD_LAZY);
-					if (!handle) {
-						std::cerr << "dlopen erreur : " << dlerror() << std::endl;
-						exit(EXIT_FAILURE);
-					}
-					handle_lib(&a, handle);
-					started = false;
-				}
-			}*/
+			Game g(a.width, a.height, argc, argv);
 		}
-		catch (std::invalid_argument const & e) {
+		catch (const std::exception & e) {
 			std::cerr << "Error :" << e.what() << std::endl;
-			std::cout << "usage: ./nibler [width] [height]" << std::endl;
+			// std::cout << "usage: ./nibler [width] [height]" << std::endl;
 			exit(EXIT_FAILURE);
 		}
 	}
